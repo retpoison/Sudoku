@@ -46,6 +46,7 @@ class SudokuWindow(Adw.ApplicationWindow):
     game_view_box = Gtk.Template.Child()
     grid_container = Gtk.Template.Child()
     pencil_toggle_button = Gtk.Template.Child()
+    delete_toggle_button = Gtk.Template.Child()
     primary_menu_button = Gtk.Template.Child()
     sudoku_window_title = Gtk.Template.Child()
 
@@ -108,6 +109,12 @@ class SudokuWindow(Adw.ApplicationWindow):
             "toggled", self.game_manager.on_pencil_toggled
         )
 
+        # Setup delete button
+        self.delete_toggle_button.set_active(False)
+        self.delete_toggle_button.connect(
+            "toggled", self.game_manager.on_delete_toggled
+        )
+
     def _setup_stack_observer(self):
         """Setup stack page change observer."""
         self.stack.connect("notify::visible-child", self.on_stack_page_changed)
@@ -118,6 +125,7 @@ class SudokuWindow(Adw.ApplicationWindow):
         is_game_page = stack.get_visible_child() != self.main_menu_box
         self.lookup_action("back-to-menu").set_enabled(is_game_page)
         self.pencil_toggle_button.set_visible(is_game_page)
+        self.delete_toggle_button.set_visible(is_game_page)
 
     def on_continue_clicked(self, button):
         """Handle continue button click."""

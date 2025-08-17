@@ -33,6 +33,7 @@ class GameManager:
         self.cell_inputs = None
         self.conflict_cells = []
         self.pencil_mode = False
+        self.delete_mode = False
 
         self.key_map, self.remove_cell_keybindings = UIHelpers.setup_key_mappings()
 
@@ -48,6 +49,12 @@ class GameManager:
         )
         pencil_action.connect("change-state", self.on_pencil_action_toggled)
         self.window.add_action(pencil_action)
+
+        delete_action = Gio.SimpleAction.new_stateful(
+            "delete-toggled", None, GLib.Variant.new_boolean(False)
+        )
+        delete_action.connect("change-state", self.on_delete_action_toggled)
+        self.window.add_action(delete_action)
 
     def start_game(self, difficulty: float, difficulty_label: str):
         logging.info(f"Starting game with difficulty: {difficulty}")
@@ -158,7 +165,7 @@ class GameManager:
 
     def _clear_cell(self, cell: SudokuCell):
         row, col = cell.row, cell.col
-        if self.pencil_mode:
+        if self.pencil_mode or self.delete_mode:
             self.game_board.clear_notes(row, col)
             cell.update_notes(set())
         else:
@@ -235,6 +242,8 @@ class GameManager:
     def on_cell_clicked(self, gesture, n_press, x: int, y: int, cell: SudokuCell):
         UIHelpers.highlight_related_cells(self.cell_inputs, cell.row, cell.col)
         if cell.editable and n_press == 1:
+            if self.delete_mode:
+                self._clear_cell(cell)
             self._show_popover(cell)
         else:
             cell.grab_focus()
@@ -282,6 +291,8 @@ class GameManager:
 
     def on_pencil_toggled(self, button: Gtk.ToggleButton):
         self.pencil_mode = button.get_active()
+        if self.pencil_mode and self.delete_mode:
+            self.window.delete_toggle_button.set_active(False)
         logging.info(
             "Pencil Mode is now ON" if self.pencil_mode else "Pencil mode is now OFF"
         )
@@ -291,6 +302,19 @@ class GameManager:
         action.set_state(GLib.Variant.new_boolean(new_state))
         self.window.pencil_toggle_button.set_active(new_state)
 
+    def on_delete_toggled(self, button: Gtk.ToggleButton):
+        self.delete_mode = button.get_active()
+        if self.pencil_mode and self.delete_mode:
+            self.window.pencil_toggle_button.set_active(False)
+        logging.info(
+            "Delete Mode is now ON" if self.delete_mode else "Delete mode is now OFF"
+        )
+
+    def on_delete_action_toggled(self, action, value):
+        new_state = not action.get_state().get_boolean()
+        action.set_state(GLib.Variant.new_boolean(new_state))
+        self.window.delete_toggle_button.set_active(new_state)
+
     def on_back_to_menu(self, action, parameter):
         self.window.continue_button.set_sensitive(GameBoard.has_saved_game())
         self.window.stack.set_visible_child(self.window.main_menu_box)
@@ -298,6 +322,7 @@ class GameManager:
 
     def _show_puzzle_finished_dialog(self):
         self.window.pencil_toggle_button.set_visible(False)
+        self.window.delete_toggle_button.set_visible(False)
 
         while child := self.window.grid_container.get_first_child():
             self.window.grid_container.remove(child)

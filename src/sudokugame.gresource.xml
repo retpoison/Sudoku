@@ -12,6 +12,10 @@
     <file preprocess="xml-stripblanks" alias="pencil-symbolic.svg">../data/icons/hicolor/scalable/actions/pencil-symbolic.svg</file>
   </gresource>
 
+  <gresource prefix="/io/github/sepehr_rs/Sudoku/icons/scalable/actions/">
+    <file preprocess="xml-stripblanks" alias="eraser-symbolic.svg">../data/icons/hicolor/scalable/actions/eraser-symbolic.svg</file>
+  </gresource>
+
   <gresource prefix="/io/github/sepehr_rs/Sudoku/illustrations">
     <file preprocess="xml-stripblanks" alias="puzzle-complete-celebration.svg">../data/illustrations/puzzle-complete-celebration.svg</file>
   </gresource>

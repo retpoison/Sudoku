@@ -46,6 +46,7 @@ class SudokuApplication(Adw.Application):
     def _setup_accelerators(self):
         """Set up keyboard accelerators for window actions."""
         self.set_accels_for_action("win.pencil-toggled", ["<Ctrl>p"])
+        self.set_accels_for_action("win.delete-toggled", ["<Ctrl>d"])
         self.set_accels_for_action("win.back-to-menu", ["<Ctrl>m"])
         self.set_accels_for_action("win.show-primary-menu", ["F10"])
 

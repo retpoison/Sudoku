@@ -42,6 +42,15 @@ template $SudokuWindow: Adw.ApplicationWindow {
 
         tooltip-text: _("Toggle Pencil Mode");
       }
+
+      [end]
+      ToggleButton delete_toggle_button {
+        Image {
+	  icon-name: "eraser-symbolic";
+        }
+
+        tooltip-text: _("Toggle Delete Mode");
+      }
     }
 
     content: Adw.ViewStack stack {
